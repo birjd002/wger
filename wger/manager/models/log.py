@@ -14,6 +14,9 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Standard Library
+from decimal import Decimal
+
 # Django
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -298,3 +301,21 @@ class WorkoutLog(models.Model):
         except WorkoutSession.DoesNotExist:
             pass
         super(WorkoutLog, self).delete(*args, **kwargs)
+
+    def calculate_one_rep_max(self):
+        """
+        Estimated 1RM for this set using the Baechle formula: weight * (1 + 0.033 * reps).
+
+        Returns None when the formula doesn't apply: missing data, non-rep units
+        (minutes/distance/until-failure), or rep counts above 12 (formula
+        becomes unreliable).
+        """
+        if not self.weight or not self.repetitions:
+            return None
+        if self.repetitions_unit_id != REP_UNIT_REPETITIONS:
+            return None
+        if self.repetitions > 12:
+            return None
+        if self.repetitions == 1:
+            return self.weight
+        return self.weight * (Decimal(1) + Decimal('0.033') * self.repetitions)

@@ -55,6 +55,7 @@ class UserprofileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     date_joined = serializers.DateTimeField(source='user.date_joined', read_only=True)
     email_verified = serializers.BooleanField(source='is_verified', read_only=True)
+    bmi = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -78,6 +79,7 @@ class UserprofileSerializer(serializers.ModelSerializer):
             'age',
             'birthdate',
             'height',
+            'bmi',
             'gender',
             'sleep_hours',
             'work_hours',
@@ -92,6 +94,9 @@ class UserprofileSerializer(serializers.ModelSerializer):
             'num_days_weight_reminder',
         )
 
+    def get_bmi(self, obj):
+        return obj.calculate_bmi()
+    
     def validate_email(self, value):
         if not value:
             return value

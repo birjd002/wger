@@ -441,6 +441,7 @@ class WorkoutLogSerializer(serializers.ModelSerializer):
     """
 
     session = serializers.PrimaryKeyRelatedField(read_only=True)
+    one_rep_max = serializers.SerializerMethodField()
 
     class Meta:
         model = WorkoutLog
@@ -459,11 +460,15 @@ class WorkoutLogSerializer(serializers.ModelSerializer):
             'weight_unit',
             'weight',
             'weight_target',
+            'one_rep_max',
             'rir',
             'rir_target',
             'rest',
             'rest_target',
         )
+
+    def get_one_rep_max(self, obj):
+        return obj.calculate_one_rep_max()
 
 
 class LogDisplaySerializer(serializers.Serializer):
