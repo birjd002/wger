@@ -14,39 +14,26 @@
 # along with Workout Manager.  If not, see <http://www.gnu.org/licenses/>.
 # Standard Library
 
+import uuid
+
 # Django
-from django.contrib.auth.models import User
 from django.db import models
 
-# wger
-from wger.measurements.models import CategoryGroup
-
-class Category(models.Model):
+class CategoryGroup(models.Model):
     class Meta:
         ordering = [
             '-name',
         ]
-
-    user = models.ForeignKey(
-        User,
-        verbose_name='User',
-        on_delete=models.CASCADE,
+        
+    id = models.UUIDField(
+         primary_key = True,
+         default = uuid.uuid4,
+         editable = False
     )
 
     name = models.CharField(
-        verbose_name='Name',
-        max_length=100,
-    )
-
-    unit = models.CharField(
-        verbose_name='Unit',
-        max_length=30,
-    )
-    
-    group = models.ForeignKey(
-        CategoryGroup,
-        verbose_name="Group",
-        on_delete=models.CASCADE,
+            verbose_name='Name',
+            max_length=100,
         )
     
     def get_owner_object(self):

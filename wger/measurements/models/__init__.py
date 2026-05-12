@@ -15,5 +15,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Local
+from .category_group import CategoryGroup
 from .category import Category
 from .measurement import Measurement
