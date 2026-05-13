@@ -30,10 +30,12 @@ from wger.measurements.api.filtersets import MeasurementEntryFilterSet
 from wger.measurements.api.serializers import (
     MeasurementSerializer,
     UnitSerializer,
+    CategoryGroupSerializer
 )
 from wger.measurements.models import (
     Category,
     Measurement,
+    CategoryGroup
 )
 from wger.utils.viewsets import WgerOwnerObjectModelViewSet
 
@@ -101,3 +103,18 @@ class MeasurementViewSet(WgerOwnerObjectModelViewSet):
             return Measurement.objects.none()
 
         return Measurement.objects.filter(category__user=self.request.user)
+
+class CategoryGroupViewSet(WgerOwnerObjectModelViewSet):
+    
+    permission_classes = [IsAuthenticated]
+    serializer_class = CategoryGroupSerializer
+    is_private = True
+    ordering_fields = "__all__"
+    filterset_fields = ('id', 'name')
+
+   
+    def get_owner_objects(self):
+        """
+        Return objects to check for ownership permission
+        """
+        return [(User, 'user')]    

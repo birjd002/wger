@@ -23,6 +23,7 @@ from rest_framework import serializers
 from wger.measurements.models import (
     Category,
     Measurement,
+    CategoryGroup
 )
 
 
@@ -30,10 +31,17 @@ class UnitSerializer(serializers.ModelSerializer):
     """
     Measurement unit serializer
     """
-
+    group_name = serializers.CharField(write_only=True)
     class Meta:
         model = Category
-        fields = ('id', 'name', 'unit')
+        fields = ('id', 'name', 'unit', 'group_name')
+    
+    # Creates category group
+    def create(self, data):
+        group_name = data.pop('group_name', None)
+        group, created = CategoryGroup.objects.get_or_create(name=group_name)
+        data['group'] = group
+        return super().create(data)
 
 
 class MeasurementSerializer(serializers.ModelSerializer):
@@ -59,3 +67,11 @@ class MeasurementSerializer(serializers.ModelSerializer):
             'value',
             'notes',
         )
+
+class CategoryGroupSerializer(serializers.ModelSerializer):
+    """
+    Category Group Serializer
+    """
+    class Meta:
+        model = CategoryGroup
+        fields = ('id', 'name')
