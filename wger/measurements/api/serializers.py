@@ -31,15 +31,17 @@ class UnitSerializer(serializers.ModelSerializer):
     """
     Measurement unit serializer
     """
-    group_name = serializers.CharField(write_only=True)
+    group = serializers.CharField(write_only=True)
+
+    group_name = serializers.CharField(source="group.name", read_only=True)
     class Meta:
         model = Category
-        fields = ('id', 'name', 'unit', 'group_name')
+        fields = ('id', 'name', 'unit','group','group_id','group_name')
     
     # Creates category group
     def create(self, data):
-        group_name = data.pop('group_name', None)
-        group, created = CategoryGroup.objects.get_or_create(name=group_name)
+        group = data.pop('group', None)
+        group, created = CategoryGroup.objects.get_or_create(name=group)
         data['group'] = group
         return super().create(data)
 
